@@ -21,7 +21,7 @@ Node* make_node(void* key){
     return n;
 }
 
-Btree* make_btree_empty(){
+Btree* make_empty_tree(){
     Btree* tree= malloc(sizeof(Btree));
     tree->head=NULL;
     return tree;
@@ -84,17 +84,18 @@ Node* search_tree(Btree* tree, void* data){
         }
         return n;
     }
-
-    Node* minimum(Btree* tree){
-        Node* n = tree->head;
-        while(n->left!=NULL){
-            n=n->left;
-        }
-        return n;
-    }
 }
 
-Node* maximum(Btree* tree){
+Node* minimum(Node* n){
+    //Node* n = tree->head;
+    while(n->left!=NULL){
+        n=n->left;
+    }
+    return n;
+}
+
+
+Node* tree_maximum(Btree* tree){
     Node* n = tree->head;
     while(n->right!=NULL){
         n=n->right;
@@ -136,12 +137,39 @@ void tree_insert(Btree* T, Node* z){
     }
 }
 
+void transplant(Btree* T, Node* u, Node* v){
+    if (u->prev==NULL){
+        T->head = v;
+    }else if ( u == u->prev->left ){
+        u->prev->left = v;
+    }else {
+        u->prev->right = v;
+    }
+    if (v != NULL){
+        v->prev = u->prev;
+    }
+}
+
+/**this needs to have garbage collection added**/
+void delete_node(Btree* T, Node* z){
+    if (z->left == NULL){
+        transplant(T, z, z->left);
+    } else if (z->right == NULL){
+        transplant(T,z,z->left);
+    } else {
+        Node* y = minimum(z->right);
+        transplant(T, y, y->right);
+        y->right = z->right;
+        y->right->prev = y;
+        transplant(T,y,y->right);
+        y->left = z->left;
+        y->left->prev =y;
+    }
+}
+
 
 int main(){
     return 0;
 }
-
-
-
 
 

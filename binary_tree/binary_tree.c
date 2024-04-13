@@ -115,6 +115,28 @@ Node* find_successor_node(Node* n){
     return y;
 }
 
+void tree_insert(Btree* T, Node* z){
+    Node* y = NULL;
+    Node* x = T->head;
+    while (x != NULL){
+        y=x;
+        if (z->key < x->key){
+            z= x->left;
+        }else{
+            z = x-> right;
+        }
+        z->prev = y;
+        if (y==NULL){
+            T->head = z;
+        }else if ( z->key < y->key ) {
+            y->left = z;
+        }else {
+            y->right = z;
+        }
+    }
+}
+
+
 int main(){
     return 0;
 }

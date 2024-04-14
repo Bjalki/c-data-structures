@@ -153,7 +153,6 @@ void transplant(Btree* T, Node* u, Node* v){
     }
 }
 
-/**this needs to have garbage collection added**/
 void delete_node(Btree* T, void* data){
     Node* z = search_tree(T, data);
     if (z==NULL){
@@ -185,16 +184,6 @@ void free_tree(Btree* T){
         print_node_int(n->right);
         free(n);
     }
-}
-
-int main(){
-    Btree* tree = make_btree((void*)10);
-    tree_insert(tree, (void*)15);
-    tree_insert(tree, (void*)5);
-    print_tree_int(tree);
-    delete_node(tree, (void*)5);
-    print_tree_int(tree);
-    return 0;
 }
 
 

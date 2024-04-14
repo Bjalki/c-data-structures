@@ -35,7 +35,7 @@ Btree* make_btree(void* key) {
 
 
 void print_node_int(Node* n){
-    while(n!=NULL){
+    if(n!=NULL){
         print_node_int(n->left);
         printf("%d",(int*) n->key);
         print_node_int(n->right);
@@ -87,13 +87,15 @@ Node* search_tree(Btree* tree, void* data){
 }
 
 Node* minimum(Node* n){
-    //Node* n = tree->head;
     while(n->left!=NULL){
         n=n->left;
     }
     return n;
 }
 
+Node* tree_minimum(Btree* T){
+    minimum(T->head);
+}
 
 Node* tree_maximum(Btree* tree){
     Node* n = tree->head;
@@ -116,15 +118,16 @@ Node* find_successor_node(Node* n){
     return y;
 }
 
-void tree_insert(Btree* T, Node* z){
+void tree_insert(Btree* T, void* p){
+    Node* z = make_node(p);
     Node* y = NULL;
     Node* x = T->head;
     while (x != NULL){
         y=x;
         if (z->key < x->key){
-            z= x->left;
+            x= x->left;
         }else{
-            z = x-> right;
+            x = x-> right;
         }
         z->prev = y;
         if (y==NULL){
@@ -151,12 +154,15 @@ void transplant(Btree* T, Node* u, Node* v){
 }
 
 /**this needs to have garbage collection added**/
-void delete_node(Btree* T, Node* z){
-    if (z->left == NULL){
-        transplant(T, z, z->left);
-    } else if (z->right == NULL){
+void delete_node(Btree* T, void* data){
+    Node* z = search_tree(T, data);
+    if (z==NULL){
+        return;
+    }else if (z->left == NULL){
+        transplant(T, z, z->right);
+    }else if (z->right == NULL){
         transplant(T,z,z->left);
-    } else {
+    }else {
         Node* y = minimum(z->right);
         transplant(T, y, y->right);
         y->right = z->right;
@@ -165,10 +171,29 @@ void delete_node(Btree* T, Node* z){
         y->left = z->left;
         y->left->prev =y;
     }
+    free(z);
 }
 
+void free_node(Node* n){
+    free(n);
+}
+
+void free_tree(Btree* T){
+    Node* n = T->head;
+    while(n!=NULL){
+        print_node_int(n->left);
+        print_node_int(n->right);
+        free(n);
+    }
+}
 
 int main(){
+    Btree* tree = make_btree((void*)10);
+    tree_insert(tree, (void*)15);
+    tree_insert(tree, (void*)5);
+    print_tree_int(tree);
+    delete_node(tree, (void*)5);
+    print_tree_int(tree);
     return 0;
 }
 

@@ -1,6 +1,14 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+
+typedef enum tree_type {
+    Int,
+    Char, 
+    Float,
+    String,
+}Tree_type;
+
 typedef struct node {
     void* key;
     struct node* prev;
@@ -10,10 +18,12 @@ typedef struct node {
 
 typedef struct btree {
     struct node* head;
+    enum tree_type type;
 }Btree;
 
 Node* make_node(void* key){
     Node* n = malloc(sizeof(Node));
+    n->key = malloc(sizeof(key));
     n->key = key;
     n->prev = NULL;
     n->left = NULL;
@@ -21,31 +31,43 @@ Node* make_node(void* key){
     return n;
 }
 
-Btree* make_empty_tree(){
+Btree* make_empty_tree(Tree_type data_type){
     Btree* tree= malloc(sizeof(Btree));
+    tree->type = data_type;
     tree->head=NULL;
     return tree;
 }
 
-Btree* make_btree(void* key) {
+Btree* make_btree(void* key, Tree_type data_type) {
     Btree* tree = malloc(sizeof(Btree));
     tree-> head = make_node(key);
+    tree->type = data_type;
     return tree;
 }
 
 
-void print_node_int(Node* n){
-    if(n!=NULL){
-        print_node_int(n->left);
-        printf("%d",(int*) n->key);
-        print_node_int(n->right);
+void print_node_string(Node* n){
+    while(n!=NULL){
+        print_node_string(n->left);
+        printf("%s", n->key);
+        print_node_string(n->right);
     }
 }
 
+void print_node_char(Node* n){
+    while(n!=NULL){
+        print_node_char(n->left);
+        printf("%s",(char*) n->key);
+        print_node_char(n->right);
+    }
+}
 
-void print_tree_int(Btree* tree){
-    Node* n = tree->head;
-    print_node_int(n);
+void print_node_int(Node* n){
+    if(n!=NULL){
+        print_node_int(n->left);
+        printf("%d",(int) n->key);
+        print_node_int(n->right);
+    }
 }
 
 void print_node_float(Node* n){
@@ -56,23 +78,20 @@ void print_node_float(Node* n){
     }
 }
 
-void print_tree_float(Btree* tree){
-    Node* n = tree->head;
-    print_node_float(n);
-}
-
-void print_node_char(Node* n){
-    while(n!=NULL){
-        print_node_char(n->left);
-        printf("%c",(char*) n->key);
-        print_node_char(n->right);
+void print_tree(Btree* tree){
+    switch(tree->type){
+        case Int:
+            print_node_int(tree->head);
+            break;
+        case Char:
+            print_node_char(tree->head);
+            break;
+        case Float:
+            print_node_float(tree->head);
+            break;
     }
 }
 
-void print_tree_char(Btree* tree){
-    Node* n = tree->head;
-    print_node_char(n);
-}
 
 Node* search_tree(Btree* tree, void* data){
     Node* n= tree->head;
@@ -84,6 +103,7 @@ Node* search_tree(Btree* tree, void* data){
         }
         return n;
     }
+    return NULL;
 }
 
 Node* minimum(Node* n){
@@ -94,7 +114,7 @@ Node* minimum(Node* n){
 }
 
 Node* tree_minimum(Btree* T){
-    minimum(T->head);
+    return minimum(T->head);
 }
 
 Node* tree_maximum(Btree* tree){
